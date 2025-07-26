@@ -1,0 +1,216 @@
+skills:
+  frontend:
+    label: Frontend
+    description: |
+      - HTML, CSS, JavaScript
+      - React, Vue, Angular
+      - TypeScript
+      - Responsive Design
+      - Performance Optimization
+    default_value: 50
+    
+  devops:
+    label: DevOps & Infrastructure
+    description: |
+      - Docker, Kubernetes
+      - CI/CD Pipelines
+      - Cloud Platforms (AWS, Azure, GCP)
+      - Infrastructure as Code
+    default_value: 50
+    
+  security:
+    label: Netzwerk & Sicherheit
+    description: |
+      - Netzwerk-Protokolle
+      - Firewalls & VPNs
+      - Penetration Testing
+      - Security Best Practices
+    default_value: 50
+    
+  backend:
+    label: Backend
+    description: |
+      - API Entwicklung
+      - Datenbanken (SQL/NoSQL)
+      - Server-side Programming
+      - Microservices Architecture
+    default_value: 50
+    
+  collaboration:
+    label: Zusammenarbeit & Teamwork
+    description: |
+      - Agile Methodologies
+      - Cross-Team Collaboration
+      - Feedback geben/nehmen
+      - Projekt Management
+      - Remote Work
+    default_value: 50
+    
+  testing:
+    label: Testing & QA
+    description: |
+      - Unit & Integration Tests
+      - Test Automation
+      - Performance Testing
+      - Code Quality Assurance
+    default_value: 50
+
+  data_analytics:
+    label: Data & Analytics
+    description: |
+      - SQL & Datenbanken
+      - Data Visualization
+      - Business Intelligence
+      - Machine Learning Basics
+    default_value: 50
+
+  mobile:
+    label: Mobile Development
+    description: |
+      - iOS/Android Development
+      - React Native/Flutter
+      - Mobile Performance
+      - App Store Optimization
+      - Cross-Platform Development
+    default_value: 50
+
+  architecture:
+    label: Software Architecture
+    description: |
+      - System Design
+      - Design Patterns
+      - Microservices
+      - Scalability & Performance
+    default_value: 50
+
+  product_management:
+    label: Product & Strategy
+    description: |
+      - Product Management
+      - User Research
+      - Roadmap Planning
+      - Market Analysis
+    default_value: 50
+
+  automation:
+    label: Automation & Scripting
+    description: |
+      - Build Automation
+      - Process Optimization
+      - Scripting (Python, Bash)
+      - Workflow Management
+    default_value: 50
+
+  business_acumen:
+    label: Business & Strategy
+    description: |
+      - Geschäftsverständnis
+      - Stakeholder Management
+      - Budget & Ressourcenplanung
+      - Marktanalyse
+    default_value: 50
+
+  creativity:
+    label: Kreativität & Innovation
+    description: |
+      - Problem Solving
+      - Design Thinking
+      - Innovation Management
+      - Kreative Lösungsansätze
+    default_value: 50
+
+  mentoring:
+    label: Mentoring & Coaching
+    description: |
+      - Wissensvermittlung
+      - Team Development
+      - Code Reviews
+      - Junior Entwicklung
+    default_value: 50
+
+  customer_focus:
+    label: Kundenorientierung
+    description: |
+      - User Experience
+      - Kundenfeedback Integration
+      - Support & Beratung
+      - Anforderungsanalyse
+    default_value: 50
+
+  continuous_learning:
+    label: Lebenslanges Lernen
+    description: |
+      - Technologie-Trends
+      - Selbstorganisation
+      - Weiterbildung
+      - Wissensmanagement
+    default_value: 50
+
+  leadership:
+    label: Führung & Management
+    description: |
+      - Team Leadership
+      - Mitarbeiterführung
+      - Entscheidungsfindung
+      - Konfliktmanagement
+      - Delegation & Verantwortung
+    default_value: 50
+
+  presentation:
+    label: Präsentation & Communication
+    description: |
+      - Public Speaking
+      - Storytelling
+      - Visualisierung von Daten
+      - Meeting Moderation
+      - Verkaufs-/Überzeugungsarbeit
+    default_value: 50
+
+  accessibility:
+    label: Accessibility & Inklusion
+    description: |
+      - WCAG Guidelines
+      - Screen Reader Kompatibilität
+      - Barrierefreie UI/UX
+      - Assistive Technologies
+      - Inclusive Design
+    default_value: 50
+
+  ux_ui_design:
+    label: UX/UI Design
+    description: |
+      - User Experience Design
+      - Interface Design
+      - Prototyping & Wireframing
+      - Design Systems
+      - User Research & Testing
+      - Figma, Sketch, Adobe XD
+    default_value: 50
+
+  hosting_administration:
+    label: IT-Hosting & Administration
+    description: |
+      - Server Administration (Linux/Windows)
+      - Web Hosting & Domain Management
+      - Load Balancing & High Availability
+      - Backup & Disaster Recovery
+      - Performance Monitoring & Optimization
+      - Shared/VPS/Dedicated/Cloud Hosting
+    default_value: 50
+
+# Allgemeine Konfiguration
+app:
+  title: "Skill Hexagon Generator"
+  default_chart_title: "Meine Skills"
+  max_skill_value: 99
+  min_skill_value: 0
+  max_skills: 6  # Maximale Anzahl auswählbarer Skills
+  
+# Standard-Skills die beim ersten Laden angezeigt werden
+default_skills:
+  - frontend
+  - devops
+  - security
+  - backend
+  - collaboration
+  - testing
