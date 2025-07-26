@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Evolution Skill Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@400;700&family=Rajdhani:wght@400;600;700&family=Bebas+Neue&family=Russo+One&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .controls {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .chart-container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            position: relative;
+        }
+        
+        .copy-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f6f8fa;
+            color: #656d76;
+            border: 1px solid #d1d9e0;
+            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            padding: 0;
+        }
+        
+        .copy-button:hover {
+            background: #f3f4f6;
+            border-color: #c7d2da;
+            color: #24292f;
+        }
+        
+        .copy-button:active {
+            background: #e9ecef;
+            border-color: #afb8c1;
+        }
+        
+        .copy-button.copied {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .tooltip {
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #374151;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 1000;
+        }
+        
+        .tooltip::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-bottom: 4px solid #374151;
+        }
+        
+        .tooltip.show {
+            opacity: 1;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 700;
+            font-family: 'Orbitron', 'Exo 2', 'Rajdhani', 'Bebas Neue', 'Russo One', monospace;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        h2, h3, h4, h5, h6 {
+            color: #495057;
+            font-weight: 600;
+            font-family: monospace;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        h2 {
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+        
+        .skill-input {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #495057;
+            font-size: 0.9em;
+        }
+        
+        input[type="text"], input[type="number"] {
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #28a745;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin: 8px 0;
+        }
+        
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .range-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        
+        button {
+            background: #28a745;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 20px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background: #218838;
+        }
+        
+        .add-skill {
+            background: #007bff;
+            margin-top: 10px;
+        }
+        
+        .add-skill:hover {
+            background: #0056b3;
+        }
+        
+        .remove-skill {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .remove-skill:hover {
+            background: #c82333;
+        }
+        
+        .skill-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .skill-name {
+            flex: 1;
+        }
+        
+        .skill-value {
+            width: 100%;
+        }
+        
+        .skill-slider-container {
+            position: relative;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+            cursor: grab;
+        }
+        
+        .skill-slider-container:hover {
+            border-color: #dee2e6;
+        }
+        
+        .skill-slider-container:active {
+            cursor: grabbing;
+        }
+        
+        .skill-slider-container.dragging {
+            opacity: 0.5;
+            transform: rotate(3deg);
+            border-color: #007bff;
+            background: #e7f3ff;
+        }
+        
+        .skill-slider-container.drag-over {
+            border-color: #28a745;
+            background: #e8f5e8;
+            transform: scale(1.02);
+        }
+        
+        .skill-row.draggable {
+            transition: transform 0.2s ease;
+        }
+        
+        .skill-row.draggable:hover {
+            transform: translateY(-2px);
+        }
+        
+        .skill-slider-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            opacity: 0.15;
+            z-index: 1;
+        }
+        
+        .skill-slider-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .skill-slider-name {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.95em;
+        }
+        
+        .skill-slider-value {
+            font-weight: bold;
+            font-size: 1.1em;
+            min-width: 35px;
+            text-align: right;
+        }
+        
+        .skill-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 3;
+        }
+        
+        .skill-placeholder {
+            opacity: 0.6;
+            margin-bottom: 20px;
+        }
+        
+        .skill-placeholder .skill-slider-container {
+            border: 2px dashed #dee2e6;
+            background: #f8f9fa;
+            cursor: not-allowed;
+        }
+        
+        .skill-placeholder .skill-slider-name {
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .skill-placeholder .skill-slider-value {
+            color: #6c757d;
+        }
+        
+        .skill-placeholder .skill-slider {
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        #chartImage {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            min-height: 400px; /* Mindesthöhe für Layout-Stabilität */
+            width: 100%;
+            object-fit: contain; /* Behält Seitenverhältnis bei */
+        }
+        
+        #chartDisplay {
+            min-height: 450px; /* Container-Mindesthöhe */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .loading {
+            color: #6c757d;
+            font-style: italic;
+            margin: 0; /* Entfernt Standard-Margins */
+        }
+        
+        .skill-checkboxes {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .skill-checkboxes::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .skill-checkboxes::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .skill-checkboxes::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .skill-checkboxes::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        .skill-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.85em;
+            position: relative;
+        }
+        
+        .skill-checkbox:hover {
+            background: #f8f9fa;
+            border-color: #dee2e6;
+        }
+        
+        .skill-checkbox input[type="checkbox"] {
+            margin: 0;
+        }
+        
+        .skill-checkbox label {
+            margin: 0;
+            cursor: pointer;
+            font-size: 0.85em;
+            flex: 1;
+            line-height: 1.2;
+        }
+        
+        .skill-info {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+        
+        .info-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #e9ecef;
+            color: #6c757d;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: help;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+        
+        .info-icon:hover {
+            background: #007bff;
+            color: white;
+            opacity: 1;
+        }
+        
+        .skill-tooltip {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2d3748;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            white-space: normal;
+            word-wrap: break-word;
+            word-break: break-word;
+            hyphens: auto;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 9999;
+            width: 280px;
+            max-width: 90vw;
+            line-height: 1.5;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+            font-family: inherit;
+            text-align: left;
+        }
+        
+        .skill-tooltip::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #2d3748;
+        }
+        
+        /* Tooltip unten für obere Reihen */
+        .skill-checkbox:nth-child(-n+6) .skill-tooltip {
+            bottom: auto;
+            top: calc(100% + 8px);
+        }
+        
+        .skill-checkbox:nth-child(-n+6) .skill-tooltip::before {
+            top: -6px;
+            border-top: none;
+            border-bottom: 6px solid #2d3748;
+        }
+        
+        /* Tooltip links für rechte Spalte */
+        .skill-checkbox:nth-child(3n) .skill-tooltip {
+            left: auto;
+            right: 0;
+            transform: none;
+        }
+        
+        .skill-checkbox:nth-child(3n) .skill-tooltip::before {
+            left: auto;
+            right: 20px;
+            transform: none;
+        }
+        
+        /* Tooltip rechts für linke Spalte */
+        .skill-checkbox:nth-child(3n+1) .skill-tooltip {
+            left: 0;
+            transform: none;
+        }
+        
+        .skill-checkbox:nth-child(3n+1) .skill-tooltip::before {
+            left: 20px;
+            transform: none;
+        }
+        
+        .info-icon:hover .skill-tooltip {
+            opacity: 1;
+        }
+        
+        .reset-button {
+            background: #6c757d;
+            font-size: 14px;
+            padding: 8px 16px;
+            margin-top: 0;
+            width: auto;
+        }
+        
+        .reset-button:hover {
+            background: #5a6268;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 8000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .modal-header {
+            padding: 24px 24px 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.4em;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            width: auto;
+            margin: 0;
+        }
+        
+        .modal-close:hover {
+            background: #f8f9fa;
+            color: #495057;
+        }
+        
+        .modal-body {
+            padding: 20px 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .modal-footer {
+            padding: 16px 24px 24px 24px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        .modal-footer button {
+            width: auto;
+            margin: 0;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        
+        .skill-button {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .skill-button:hover {
+            background: #5a6268;
+        }
+        
+        .add-custom-button {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+            width: auto;
+            margin: 0;
+        }
+        
+        .add-custom-button:hover {
+            background: #138496;
+        }
+        
+        .custom-skill-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+        }
+        
+        .custom-skill-input {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        
+        .custom-skill-input:focus {
+            outline: none;
+            border-color: #17a2b8;
+        }
+        
+        .custom-skill-checkbox {
+            margin-right: 8px;
+        }
+        
+        .remove-custom-skill {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+        
+        .remove-custom-skill:hover {
+            background: #c82333;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Pro Evolution Skill Generator</h1>
+    
+    <div class="container">
+        <div class="controls">
+            <h2>Skill-Konfiguration</h2>
+            
+                        <div class="skill-input">
+                <label for="chartTitle">Diagramm-Titel:</label>
+                <input type="text" id="chartTitle" value="{{ default_title }}" 
+                       oninput="debouncedUpdateChart()">
+            </div>
+            
+            <div id="skillInputs">
+                <!-- Ausgewählte Skills werden hier eingefügt -->
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <p style="font-size: 0.85em; color: #6c757d; margin: 0; font-style: italic;">
+                    💡 Tipp: Skills können per Drag & Drop neu angeordnet werden. Die Reihenfolge wird im Uhrzeigersinn im Hexagon dargestellt.
+                </p>
+            </div>
+            
+            <button type="button" onclick="openSkillModal()" class="skill-button" id="skillButton">
+                Skills anpassen (6/6)
+            </button>
+        </div>
+        
+        <div class="chart-container">
+            <button class="copy-button" onclick="copyChartImage()" title="Bild kopieren">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
+                    <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+                </svg>
+                <div class="tooltip">Kopiert!</div>
+            </button>
+            <div id="chartDisplay">
+                <img id="chartImage" src="data:image/png;base64,{{ plot_url }}" alt="Skill Hexagon">
+            </div>
+        </div>
+    </div>
+
+    <!-- Skill Selection Modal -->
+    <div id="skillModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Skills anpassen</h3>
+                <button class="modal-close" onclick="closeSkillModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.95em; color: #6c757d; margin-bottom: 15px;">
+                    Wählen Sie genau {{ max_skills }} Skills aus, die im Hexagon angezeigt werden sollen:
+                </p>
+                <div id="skillCounter" style="font-size: 1em; font-weight: bold; margin-bottom: 20px; color: #6c757d;">
+                    6/6 Skills ausgewählt
+                </div>
+                
+                <!-- Vorhandene Skills -->
+                <div style="margin-bottom: 20px;">
+                    <h4 style="font-size: 0.95em; margin-bottom: 12px; color: #495057; font-family: monospace; letter-spacing: 1px; text-transform: uppercase;">Verfügbare Skills</h4>
+                    <div id="skillCheckboxes" class="skill-checkboxes" style="max-height: 300px;">
+                        <!-- Skill-Checkboxes werden hier eingefügt -->
+                    </div>
+                </div>
+                
+                <!-- Custom Skills Section -->
+                <div style="border-top: 1px solid #e9ecef; padding-top: 20px;">
+                    <h4 style="font-size: 0.95em; margin-bottom: 12px; color: #495057; font-family: monospace; letter-spacing: 1px; text-transform: uppercase;">Custom Skills hinzufügen</h4>
+                    <div id="customSkills" style="margin-bottom: 15px;">
+                        <!-- Custom Skills werden hier eingefügt -->
+                    </div>
+                    <button type="button" onclick="addCustomSkill()" class="add-custom-button">
+                        + Neuen Skill hinzufügen
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="resetToDefaults()" class="reset-button">
+                    Standard wiederherstellen
+                </button>
+                <button type="button" onclick="closeSkillModal()" class="skill-button">
+                    Fertig
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Skills aus der Konfiguration laden
+        const config = {{ config | tojson }};
+        const skillConfig = {{ all_skills | tojson }};
+        const defaultSkillKeys = {{ default_skill_keys | tojson }};
+        const maxSkills = {{ max_skills }};
+        let selectedSkills = [...defaultSkillKeys]; // Copy der Default-Skills
+        let skillData = {{ skills | tojson }};
+        let customSkills = {}; // Speichert custom Skills
+        let customSkillCounter = 0; // Für eindeutige IDs
+        
+        function getAllAvailableSkills() {
+            const allAvailableSkills = { ...skillConfig };
+            Object.keys(customSkills).forEach(customId => {
+                allAvailableSkills[customId] = customSkills[customId];
+            });
+            return allAvailableSkills;
+        }
+        
+        function initializeSkillSelection() {
+            const container = document.getElementById('skillCheckboxes');
+            container.innerHTML = '';
+            
+            // Sortiere Skills alphabetisch nach Label
+            const sortedSkillKeys = Object.keys(skillConfig).sort((a, b) => {
+                return skillConfig[a].label.localeCompare(skillConfig[b].label, 'de', { sensitivity: 'base' });
+            });
+            
+            // Erstelle Checkboxes für alle verfügbaren Skills in alphabetischer Reihenfolge
+            sortedSkillKeys.forEach(skillKey => {
+                const skill = skillConfig[skillKey];
+                const isChecked = selectedSkills.includes(skillKey);
+                
+                const checkboxDiv = document.createElement('div');
+                checkboxDiv.className = 'skill-checkbox';
+                
+                // Formatiere die Beschreibung: Punkte die mit "-" anfangen in neue Zeilen
+                let formattedDescription = skill.description.trim();
+                formattedDescription = formattedDescription.replace(/(\s*)- /g, '\n• ');
+                formattedDescription = formattedDescription.replace(/^\n/, ''); // Entferne führenden Zeilenumbruch
+                
+                checkboxDiv.innerHTML = `
+                    <input type="checkbox" id="skill_${skillKey}" ${isChecked ? 'checked' : ''} 
+                           onchange="toggleSkill('${skillKey}')">
+                    <div class="skill-info">
+                        <label for="skill_${skillKey}">${skill.label}</label>
+                        <span class="info-icon">?
+                            <div class="skill-tooltip">${formattedDescription}</div>
+                        </span>
+                    </div>
+                `;
+                
+                container.appendChild(checkboxDiv);
+            });
+            
+            updateSkillCheckboxStates();
+        }
+        
+        function toggleSkill(skillKey) {
+            const checkbox = document.getElementById(`skill_${skillKey}`);
+            
+            // Speichere aktuelle Werte vor der Änderung
+            updateSkillData();
+            
+            if (checkbox.checked) {
+                // Prüfe, ob bereits maximal viele Skills ausgewählt sind
+                if (selectedSkills.length >= maxSkills) {
+                    checkbox.checked = false;
+                    alert(`Sie können maximal ${maxSkills} Skills auswählen. Entfernen Sie zuerst einen anderen Skill.`);
+                    return;
+                }
+                
+                if (!selectedSkills.includes(skillKey)) {
+                    selectedSkills.push(skillKey);
+                    console.log('Skill hinzugefügt:', skillKey, 'Total:', selectedSkills.length); // Debug
+                }
+            } else {
+                selectedSkills = selectedSkills.filter(key => key !== skillKey);
+                console.log('Skill entfernt:', skillKey, 'Total:', selectedSkills.length); // Debug
+            }
+            
+            // Aktualisiere die Skill-Inputs und das Diagramm
+            updateSelectedSkills();
+            updateSkillCheckboxStates();
+        }
+        
+        function addCustomSkill() {
+            const customSkillsContainer = document.getElementById('customSkills');
+            customSkillCounter++;
+            const customId = `custom_${customSkillCounter}`;
+            
+            const customSkillDiv = document.createElement('div');
+            customSkillDiv.className = 'custom-skill-row';
+            customSkillDiv.id = `customRow_${customId}`;
+            
+            customSkillDiv.innerHTML = `
+                <input type="checkbox" id="skill_${customId}" class="custom-skill-checkbox" 
+                       onchange="toggleCustomSkill('${customId}')">
+                <input type="text" placeholder="Skill-Name eingeben..." class="custom-skill-input" 
+                       id="input_${customId}" oninput="updateCustomSkillName('${customId}')" maxlength="30">
+                <button type="button" onclick="removeCustomSkill('${customId}')" class="remove-custom-skill">×</button>
+            `;
+            
+            customSkillsContainer.appendChild(customSkillDiv);
+            
+            // Fokus auf das neue Input-Feld setzen
+            setTimeout(() => {
+                document.getElementById(`input_${customId}`).focus();
+            }, 50);
+        }
+        
+        function removeCustomSkill(customId) {
+            // Entferne aus selectedSkills falls ausgewählt
+            selectedSkills = selectedSkills.filter(key => key !== customId);
+            
+            // Entferne aus customSkills
+            delete customSkills[customId];
+            
+            // Entferne das DOM-Element
+            const customRow = document.getElementById(`customRow_${customId}`);
+            if (customRow) {
+                customRow.remove();
+            }
+            
+            // Aktualisiere UI
+            updateSelectedSkills();
+            updateSkillCheckboxStates();
+        }
+        
+        function updateCustomSkillName(customId) {
+            const input = document.getElementById(`input_${customId}`);
+            const skillName = input.value.trim();
+            
+            if (skillName) {
+                customSkills[customId] = {
+                    label: skillName,
+                    description: `Custom Skill: ${skillName}`,
+                    default_value: 50
+                };
+            } else {
+                delete customSkills[customId];
+            }
+        }
+        
+        function toggleCustomSkill(customId) {
+            const checkbox = document.getElementById(`skill_${customId}`);
+            const input = document.getElementById(`input_${customId}`);
+            
+            if (checkbox.checked) {
+                // Prüfe ob Name eingegeben wurde
+                if (!input.value.trim()) {
+                    checkbox.checked = false;
+                    alert('Bitte geben Sie zuerst einen Namen für den Skill ein.');
+                    input.focus();
+                    return;
+                }
+                
+                // Prüfe, ob bereits maximal viele Skills ausgewählt sind
+                if (selectedSkills.length >= maxSkills) {
+                    checkbox.checked = false;
+                    alert(`Sie können maximal ${maxSkills} Skills auswählen. Entfernen Sie zuerst einen anderen Skill.`);
+                    return;
+                }
+                
+                // Aktualisiere den Skill-Namen
+                updateCustomSkillName(customId);
+                
+                if (!selectedSkills.includes(customId)) {
+                    selectedSkills.push(customId);
+                }
+            } else {
+                selectedSkills = selectedSkills.filter(key => key !== customId);
+            }
+            
+            // Aktualisiere die Skill-Inputs und das Diagramm
+            updateSelectedSkills();
+            updateSkillCheckboxStates();
+        }
+        
+        function updateSkillCheckboxStates() {
+            const isMaxReached = selectedSkills.length >= maxSkills;
+            
+            // Verwende die gleiche Sortierung wie in initializeSkillSelection
+            const sortedSkillKeys = Object.keys(skillConfig).sort((a, b) => {
+                return skillConfig[a].label.localeCompare(skillConfig[b].label, 'de', { sensitivity: 'base' });
+            });
+            
+            sortedSkillKeys.forEach(skillKey => {
+                const checkbox = document.getElementById(`skill_${skillKey}`);
+                if (!checkbox) return; // Skip wenn Checkbox nicht existiert
+                
+                const checkboxDiv = checkbox.parentElement;
+                
+                // Deaktiviere unausgewählte Checkboxes wenn Maximum erreicht
+                if (!selectedSkills.includes(skillKey)) {
+                    checkbox.disabled = isMaxReached;
+                    // Visuelle Kennzeichnung für deaktivierte Checkboxes ohne Transparenz
+                    if (isMaxReached) {
+                        checkboxDiv.style.background = '#f8f9fa';
+                        checkboxDiv.style.borderColor = '#dee2e6';
+                        checkboxDiv.style.cursor = 'not-allowed';
+                    } else {
+                        checkboxDiv.style.background = 'white';
+                        checkboxDiv.style.borderColor = '#e9ecef';
+                        checkboxDiv.style.cursor = 'pointer';
+                    }
+                } else {
+                    checkbox.disabled = false;
+                    checkboxDiv.style.background = 'white';
+                    checkboxDiv.style.borderColor = '#e9ecef';
+                    checkboxDiv.style.cursor = 'pointer';
+                }
+            });
+            
+            // Prüfe auch Custom Skills
+            Object.keys(customSkills).forEach(customId => {
+                const checkbox = document.getElementById(`skill_${customId}`);
+                if (!checkbox) return;
+                
+                const checkboxDiv = checkbox.parentElement;
+                
+                if (!selectedSkills.includes(customId)) {
+                    checkbox.disabled = isMaxReached;
+                } else {
+                    checkbox.disabled = false;
+                }
+            });
+            
+            // Zeige Anzahl der ausgewählten Skills
+            updateSkillCounter();
+        }
+        
+        function updateSkillCounter() {
+            const counterElement = document.getElementById('skillCounter');
+            if (counterElement) {
+                counterElement.textContent = `${selectedSkills.length}/${maxSkills} Skills ausgewählt`;
+                
+                // Farbe ändern je nach Status
+                if (selectedSkills.length === maxSkills) {
+                    counterElement.style.color = '#28a745'; // Grün wenn voll
+                } else {
+                    counterElement.style.color = '#6c757d'; // Grau normal
+                }
+            }
+        }
+        
+        function resetToDefaults() {
+            selectedSkills = [...defaultSkillKeys];
+            
+            // Lösche alle Custom Skills
+            customSkills = {};
+            document.getElementById('customSkills').innerHTML = '';
+            
+            // Aktualisiere alle Checkboxes
+            Object.keys(skillConfig).forEach(skillKey => {
+                const checkbox = document.getElementById(`skill_${skillKey}`);
+                if (checkbox) {
+                    checkbox.checked = selectedSkills.includes(skillKey);
+                }
+            });
+            
+            updateSelectedSkills();
+            updateSkillCheckboxStates();
+        }
+        
+        function openSkillModal() {
+            const modal = document.getElementById('skillModal');
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden'; // Verhindert Scrollen im Hintergrund
+        }
+        
+        function closeSkillModal() {
+            const modal = document.getElementById('skillModal');
+            modal.classList.remove('show');
+            document.body.style.overflow = ''; // Stellt normales Scrollen wieder her
+            
+            // Aktualisiere Button-Text
+            updateSkillButton();
+        }
+        
+        function updateSkillButton() {
+            const button = document.getElementById('skillButton');
+            if (button) {
+                button.textContent = `Skills anpassen (${selectedSkills.length}/${maxSkills})`;
+            }
+        }
+        
+        // Modal schließen bei Klick außerhalb
+        window.onclick = function(event) {
+            const modal = document.getElementById('skillModal');
+            if (event.target === modal) {
+                closeSkillModal();
+            }
+        }
+        
+        // Modal schließen mit Escape-Taste
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('skillModal');
+                if (modal.classList.contains('show')) {
+                    closeSkillModal();
+                }
+            }
+        });
+        
+        function updateSelectedSkills() {
+            // Speichere aktuelle Werte bevor neue skillData erstellt wird
+            const currentValues = {};
+            Object.keys(skillData).forEach(skillName => {
+                currentValues[skillName] = skillData[skillName];
+            });
+            
+            // Verwende die Hilfsfunktion für alle verfügbaren Skills
+            const allAvailableSkills = getAllAvailableSkills();
+            
+            // Erstelle neue skillData basierend auf ausgewählten Skills
+            skillData = {};
+            selectedSkills.forEach(skillKey => {
+                const skill = allAvailableSkills[skillKey];
+                if (skill) {
+                    // Verwende bestehenden Wert falls vorhanden, sonst default_value
+                    skillData[skill.label] = currentValues[skill.label] || skill.default_value;
+                }
+            });
+            
+            initializeSkills(allAvailableSkills);
+            updateSkillButton();
+            debouncedUpdateChart();
+        }
+        
+        function initializeSkills(allAvailableSkills = null) {
+            if (!allAvailableSkills) {
+                allAvailableSkills = getAllAvailableSkills();
+            }
+            
+            const container = document.getElementById('skillInputs');
+            container.innerHTML = '';
+            
+            // Erstelle immer maxSkills Anzahl von Inputs (mit Platzhaltern)
+            for (let i = 0; i < maxSkills; i++) {
+                if (i < selectedSkills.length) {
+                    // Echtes Skill
+                    const skillKey = selectedSkills[i];
+                    const skill = allAvailableSkills[skillKey];
+                    if (skill) {
+                        const value = skillData[skill.label] || skill.default_value;
+                        addSkillInput(skill.label, value, i, false);
+                    }
+                } else {
+                    // Platzhalter
+                    addSkillInput('', 0, i, true);
+                }
+            }
+        }
+        
+        let updateTimeout;
+        
+        function debouncedUpdateChart() {
+            clearTimeout(updateTimeout);
+            updateTimeout = setTimeout(updateChart, 300); // 300ms Debounce
+        }
+        
+        function addSkillInput(name, value, index, isPlaceholder = false) {
+            const container = document.getElementById('skillInputs');
+            
+            const skillDiv = document.createElement('div');
+            skillDiv.className = isPlaceholder ? 'skill-row skill-placeholder' : 'skill-row draggable';
+            skillDiv.dataset.index = index;
+            
+            if (isPlaceholder) {
+                skillDiv.innerHTML = `
+                    <div class="skill-slider-container">
+                        <div class="skill-slider-background" style="width: 0%; background-color: #dee2e6;"></div>
+                        <div class="skill-slider-content">
+                            <div class="skill-slider-name">Skill auswählen...</div>
+                            <div class="skill-slider-value">-</div>
+                        </div>
+                        <input type="range" min="0" max="99" value="0" disabled class="skill-slider">
+                    </div>
+                `;
+            } else {
+                const color = getValueColor(value);
+                skillDiv.draggable = true;
+                skillDiv.innerHTML = `
+                    <div class="skill-slider-container">
+                        <div class="skill-slider-background" style="width: ${value}%; background-color: ${color};"></div>
+                        <div class="skill-slider-content">
+                            <div class="skill-slider-name">${name}</div>
+                            <div class="skill-slider-value" style="color: ${color};">${value}</div>
+                        </div>
+                        <input type="range" min="0" max="99" value="${value}" class="skill-slider"
+                               oninput="updateSliderValue(this); updateSkillData(); debouncedUpdateChart()">
+                    </div>
+                `;
+                
+                // Drag-and-Drop Event Listeners
+                skillDiv.addEventListener('dragstart', handleDragStart);
+                skillDiv.addEventListener('dragover', handleDragOver);
+                skillDiv.addEventListener('drop', handleDrop);
+                skillDiv.addEventListener('dragend', handleDragEnd);
+                skillDiv.addEventListener('dragenter', handleDragEnter);
+                skillDiv.addEventListener('dragleave', handleDragLeave);
+            }
+            
+            container.appendChild(skillDiv);
+        }
+        
+        function getValueColor(value) {
+            if (value < 20) {
+                return '#dc3545'; // Rot
+            } else if (value < 40) {
+                return '#fd7e14'; // Orange
+            } else if (value < 60) {
+                return '#ffc107'; // Gelb
+            } else if (value < 80) {
+                return '#20c997'; // Teal/Türkis
+            } else {
+                return '#28a745'; // Gedämpftes Grün
+            }
+        }
+        
+        function updateSliderValue(slider) {
+            const value = parseInt(slider.value);
+            const container = slider.parentElement;
+            const background = container.querySelector('.skill-slider-background');
+            const valueDisplay = container.querySelector('.skill-slider-value');
+            const color = getValueColor(value);
+            
+            // Aktualisiere Hintergrundbalken
+            background.style.width = value + '%';
+            background.style.backgroundColor = color;
+            
+            // Aktualisiere Wert-Anzeige
+            valueDisplay.textContent = value;
+            valueDisplay.style.color = color;
+        }
+        
+        let draggedElement = null;
+        let draggedIndex = null;
+        
+        function handleDragStart(e) {
+            draggedElement = this;
+            draggedIndex = parseInt(this.dataset.index);
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.outerHTML);
+        }
+        
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+        
+        function handleDragEnter(e) {
+            if (this !== draggedElement && this.classList.contains('draggable')) {
+                this.querySelector('.skill-slider-container').classList.add('drag-over');
+            }
+        }
+        
+        function handleDragLeave(e) {
+            this.querySelector('.skill-slider-container').classList.remove('drag-over');
+        }
+        
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            if (this !== draggedElement && this.classList.contains('draggable')) {
+                const targetIndex = parseInt(this.dataset.index);
+                
+                // Tausche die Skills in der selectedSkills Array
+                const temp = selectedSkills[draggedIndex];
+                selectedSkills[draggedIndex] = selectedSkills[targetIndex];
+                selectedSkills[targetIndex] = temp;
+                
+                // Aktualisiere die Skills-Anzeige
+                updateSelectedSkills();
+            }
+            
+            return false;
+        }
+        
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            
+            // Entferne alle drag-over Klassen
+            const containers = document.querySelectorAll('.skill-slider-container');
+            containers.forEach(container => {
+                container.classList.remove('drag-over');
+            });
+            
+            draggedElement = null;
+            draggedIndex = null;
+        }
+        
+        function updateSkillData() {
+            const skillRows = document.querySelectorAll('.skill-row:not(.skill-placeholder)');
+            skillData = {};
+            
+            skillRows.forEach((row, index) => {
+                const nameElement = row.querySelector('.skill-slider-name');
+                const sliderInput = row.querySelector('.skill-slider');
+                
+                if (nameElement && sliderInput && !sliderInput.disabled) {
+                    const skillName = nameElement.textContent;
+                    if (skillName && skillName !== 'Skill auswählen...') {
+                        skillData[skillName] = parseInt(sliderInput.value);
+                    }
+                }
+            });
+        }
+        
+        function updateChart() {
+            updateSkillData();
+            
+            const title = document.getElementById('chartTitle').value;
+            const chartDisplay = document.getElementById('chartDisplay');
+            const existingImage = document.getElementById('chartImage');
+            
+            // Bewahre die Größe des bestehenden Bildes für Layout-Stabilität
+            if (existingImage) {
+                const currentHeight = existingImage.offsetHeight;
+                chartDisplay.style.minHeight = currentHeight + 'px';
+            }
+            
+            // Zeige Loading-Indikator
+            chartDisplay.innerHTML = '<p class="loading">Diagramm wird generiert...</p>';
+            
+            // Erstelle geordnete Skills basierend auf der aktuellen Reihenfolge
+            const orderedSkills = {};
+            const allAvailableSkills = getAllAvailableSkills();
+            
+            selectedSkills.forEach(skillKey => {
+                const skill = allAvailableSkills[skillKey];
+                if (skill && skillData[skill.label] !== undefined) {
+                    orderedSkills[skill.label] = skillData[skill.label];
+                }
+            });
+            
+            fetch('/update_chart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    skills: orderedSkills,
+                    title: title
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                chartDisplay.innerHTML = `<img id="chartImage" src="data:image/png;base64,${data.image}" alt="Skill Hexagon">`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                chartDisplay.innerHTML = '<p>Fehler beim Generieren des Diagramms.</p>';
+            });
+        }
+        
+        function copyChartImage() {
+            const chartImage = document.getElementById('chartImage');
+            const copyButton = document.querySelector('.copy-button');
+            const tooltip = copyButton.querySelector('.tooltip');
+            
+            // Erstelle ein Canvas Element
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Setze Canvas-Größe basierend auf Bildgröße
+            canvas.width = chartImage.naturalWidth;
+            canvas.height = chartImage.naturalHeight;
+            
+            // Zeichne das Bild auf das Canvas
+            ctx.drawImage(chartImage, 0, 0);
+            
+            // Konvertiere Canvas zu Blob und kopiere in Zwischenablage
+            canvas.toBlob(blob => {
+                navigator.clipboard.write([
+                    new ClipboardItem({
+                        'image/png': blob
+                    })
+                ]).then(() => {
+                    // Button-Feedback
+                    copyButton.classList.add('copied');
+                    copyButton.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+                        </svg>
+                        <div class="tooltip">Kopiert!</div>
+                    `;
+                    
+                    // Zeige Tooltip
+                    const newTooltip = copyButton.querySelector('.tooltip');
+                    newTooltip.classList.add('show');
+                    
+                    setTimeout(() => {
+                        copyButton.classList.remove('copied');
+                        copyButton.innerHTML = `
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
+                                <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+                            </svg>
+                            <div class="tooltip">Kopiert!</div>
+                        `;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Fehler beim Kopieren:', err);
+                    alert('Fehler beim Kopieren des Bildes in die Zwischenablage.');
+                });
+            }, 'image/png');
+        }
+        
+        // Initialisiere Skills beim Laden der Seite
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Max Skills:', maxSkills); // Debug
+            console.log('Default Skills:', defaultSkillKeys); // Debug
+            console.log('Selected Skills initial:', selectedSkills); // Debug
+            
+            // Stelle sicher, dass nicht mehr als maxSkills ausgewählt sind
+            if (selectedSkills.length > maxSkills) {
+                selectedSkills = selectedSkills.slice(0, maxSkills);
+            }
+            
+            initializeSkillSelection();
+            initializeSkills();
+            updateSkillCounter(); // Initial counter update
+            updateSkillButton(); // Initial button text update
+        });
+    </script>
+</body>
+</html>
